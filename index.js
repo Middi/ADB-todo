@@ -1,12 +1,14 @@
 var express = require('express'),
-    app = express();
-var port = process.env.PORT || 3000;
+        app = express(),
+       port = process.env.PORT || 3000;
 
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('hello');
-});
+var homeRoutes = require('./routes/home');
+var todoRoutes = require('./routes/todos');
+
+app.use('/', homeRoutes);
+app.use('/api/todos', todoRoutes);
 
 
 // Server
