@@ -1,6 +1,6 @@
 const url = '/api/todos';
 const list = document.querySelector('.list');
-const input = document.getElementById('todoInput');
+const input = document.querySelector('#todoInput');
 
 
 // Get Todos
@@ -26,12 +26,12 @@ function addTodo(todo) {
     let newTodo
     if (!todo.completed) {
         newTodo = `
-            <li class="task">${todo.name} <span>X</span></li>
+            <li class="task" data-key="${todo._id}">${todo.name} <span class="close">X</span></li>
         `;
     }
     else {
         newTodo = `
-            <li class="task done">${todo.name} <span>X</span></li>
+            <li class="task done" data-key="${todo._id}">${todo.name} <span>X</span></li>
         `;
     }
     list.innerHTML += newTodo;
@@ -43,7 +43,7 @@ function createTodo() {
     const data = JSON.stringify({name: inputVal});
 
     fetch(url, {
-        method: "POST",
+        method: 'POST',
         body: data,
         headers: {
             'Content-Type': 'application/json'
@@ -55,10 +55,31 @@ function createTodo() {
       .then(res => addTodo(res));
 }
 
-// Event Listener
+function deleteTodo(e) {
+    var key = e.dataset.key;
+
+    fetch(`${url}/${key}`, {
+        method: 'DELETE'
+      })
+      .then(res => res.json())
+      .then(success => console.log('Message: ', success.message))
+      .catch(err => console.error('Error:', err));
+
+    e.remove(e.parentNode);
+}
+
+// Event Listeners
 input.addEventListener("keyup", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
         createTodo();
+    }
+});
+
+
+list.addEventListener('click', (e) => {
+    if(e.target && e.target.nodeName === 'SPAN') {
+        var key = e.target.parentNode;
+        deleteTodo(key);
     }
 });
